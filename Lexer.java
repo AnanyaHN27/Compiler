@@ -1,5 +1,4 @@
 package compiler;
-//TODO: incorporate signed numbers into the lexer
 import java.util.*;
 import java.io.*;
 
@@ -11,7 +10,7 @@ public class Lexer {
     public List<Token> tokenList;
 
     private enum LexerStatus {
-        StartStatus, IntStatus, DecimalStatus, DFStatus, CStatus, OStatus, SStatus,
+        StartStatus, IntStatus, DecimalStatus, DFStatus, CStatus, OStatus, SStatus, AddMinusOpStatus,
     }
 
     public Lexer(String inputString) {
@@ -44,11 +43,29 @@ public class Lexer {
                     tokenList.add(new Token(Token.Tokens.LineEndToken));
                 }
             }
-            if (c == '+') {
-                tokenList.add(new Token(Token.Tokens.AddToken));
+            if (lexerStatus == LexerStatus.AddMinusOpStatus && (c=='+' || c=='-')){
+                wholeSDN.append(c);
+                lexerStatus = LexerStatus.IntStatus;
+            }
+            else if (c == '+') {
+                if(lexerStatus == LexerStatus.StartStatus){
+                    wholeSDN.append(c);
+                    lexerStatus = LexerStatus.IntStatus;
+                }
+                else{
+                    lexerStatus = LexerStatus.AddMinusOpStatus;
+                    tokenList.add(new Token(Token.Tokens.AddToken));
+                }
             }
             else if (c == '-') {
-                tokenList.add(new Token(Token.Tokens.SubToken));
+                if(lexerStatus == LexerStatus.StartStatus){
+                    wholeSDN.append(c);
+                    lexerStatus = LexerStatus.IntStatus;
+                }
+                else{
+                    lexerStatus = LexerStatus.AddMinusOpStatus;
+                    tokenList.add(new Token(Token.Tokens.SubToken));
+                }
             }
             else if (c == '*') {
                 tokenList.add(new Token(Token.Tokens.MultToken));
@@ -82,6 +99,8 @@ public class Lexer {
                 } else if (lexerStatus == LexerStatus.DecimalStatus) {
                     lexerStatus = LexerStatus.DFStatus;
                 } else if (lexerStatus == LexerStatus.SStatus) {
+                    lexerStatus = LexerStatus.IntStatus;
+                } else if (lexerStatus == LexerStatus.AddMinusOpStatus){
                     lexerStatus = LexerStatus.IntStatus;
                 }
                 wholeSDN.append(c);
