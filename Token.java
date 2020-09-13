@@ -13,14 +13,22 @@ public class Token {
     }
 
     private Tokens type;
-    private double value;
+    private Double value;
 
-    public Token(Tokens type, double value) {
+    public Token(Tokens type, Double value) {
         this.type = type;
         this.value = value;
     }
 
     public Token(Tokens type) {
         this.type = type;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public Tokens getType() {
+        return type;
     }
 }

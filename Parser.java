@@ -5,12 +5,12 @@ import java.util.*;
 
 public class Parser{
 
-   private int lookahead;
    private LinkedHashMap<Variable, List<Object>> productionRules;
+   private List<ProductionRule> productions;
 
    public Parser() throws IOException{
-       lookahead = System.in.read();
        productionRules = setRules();
+       productions = createProductions();
    }
 
    public LinkedHashMap<Variable, List<Object>> setRules(){
@@ -21,16 +21,26 @@ public class Parser{
        productionRules.put(Variable.Sub, List.of(Variable.Sub, "-", Variable.Mult));
        productionRules.put(Variable.Sub, List.of(Variable.Mult));
        productionRules.put(Variable.Mult, List.of(Variable.Mult, "*", Variable.Cosine));
-       productionRules.put(Variable.Cosine, List.of("cos", Variable.Cosine, "+", Variable.Fact));
+       productionRules.put(Variable.Cosine, List.of("cos", Variable.Cosine));
        productionRules.put(Variable.Fact, List.of(Variable.SDN));
        return productionRules;
    }
 
-   /*
-   public void parseExpression(Lexer lexer){
-       Token token = lexer
+   public List<ProductionRule> createProductions(){
+       List<ProductionRule> productionRules = new ArrayList<>();
+       productionRules.add(new ProductionRule(Variable.Calc, List.of(Variable.Calc, '+' ,Variable.Sum)));
+       productionRules.add(new ProductionRule(Variable.Calc, List.of(Variable.Sub)));
+       productionRules.add(new ProductionRule(Variable.Sub, List.of(Variable.Sub, "-", Variable.Mult)));
+       productionRules.add(new ProductionRule(Variable.Sub, List.of(Variable.Mult)));
+       productionRules.add(new ProductionRule(Variable.Mult, List.of(Variable.Mult, "*", Variable.Cosine)));
+       productionRules.add(new ProductionRule(Variable.Mult, List.of(Variable.Cosine)));
+       productionRules.add(new ProductionRule(Variable.Cosine, List.of("cos", Variable.Cosine)));
+       productionRules.add(new ProductionRule(Variable.Cosine, List.of(Variable.Fact)));
+       productionRules.add(new ProductionRule(Variable.Fact, List.of(Variable.Fact, '!')));
+       productionRules.add(new ProductionRule(Variable.Fact, List.of(Variable.Value)));
+       productionRules.add(new ProductionRule(Variable.Value, List.of(Variable.SDN)));
+       return null;
    }
-   */
 
     public LinkedHashSet<LinkedHashMap<Variable, List<Object>>> closure(){
         LinkedHashSet<LinkedHashMap<Variable, List<Object>>> closedSet = new LinkedHashSet<>();
