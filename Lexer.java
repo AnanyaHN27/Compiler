@@ -1,6 +1,5 @@
 package compiler;
 import java.util.*;
-import java.io.*;
 
 import static java.lang.Character.*;
 
@@ -13,12 +12,12 @@ public class Lexer {
         StartStatus, IntStatus, DecimalStatus, DFStatus, CStatus, OStatus, SStatus, AddMinusOpStatus,
     }
 
-    public Lexer(String inputString) {
+    public Lexer(String inputString) throws LexingException {
         this.inputString = inputString;
-        //tokenList = this.tokenize();
+        tokenList = tokenize(this.inputString);
     }
 
-    public List<Token> tokenize(String inputString) {
+    public List<Token> tokenize(String inputString) throws LexingException{
 
         List<Token> tokenList = new ArrayList<Token>();
         StringBuilder wholeSDN = new StringBuilder();
@@ -28,7 +27,6 @@ public class Lexer {
 
         char[] charArray = inputString.toCharArray();
         for (char c : charArray) {
-            System.out.println(c);
             if ((lexerStatus == LexerStatus.IntStatus || lexerStatus == LexerStatus.DFStatus) && !isDigit(c) && c != '.') {
                 if (wholeSDN.length() > 0) {
                     Double valueToAdd = Double.valueOf(wholeSDN.toString());
@@ -112,7 +110,7 @@ public class Lexer {
                 wholeSDN.append(c);
             }
             else{
-                tokenList.add(new Token(Token.Tokens.InvalidToken));
+                throw new LexingException("Invalid token!");
             }
         }
         if(wholeSDN.length() > 0){
@@ -123,5 +121,4 @@ public class Lexer {
         this.tokenList = tokenList;
         return this.tokenList;
     }
-
 }
